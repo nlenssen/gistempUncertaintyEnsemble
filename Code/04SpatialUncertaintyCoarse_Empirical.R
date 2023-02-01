@@ -73,7 +73,11 @@ for(d in 1:length(decInds)){
 		maskVec <- interpolatedField[lonInd,latInd,]
 		if(all(is.na(trueVec)))	next()
 		if(all(is.na(maskVec))){
-			uncEstimate[lonInd,latInd,d] <- NA
+			if(allLocationsLandUncertainty){
+				uncEstimate[lonInd,latInd,d] <- sd(trueVec,na.rm=T)
+			} else{
+				uncEstimate[lonInd,latInd,d] <- NA
+			}
 			next()
 		}
 	
@@ -101,5 +105,10 @@ for(d in 1:length(decInds)){
 
 
 # save the important output
+if(allLocationsLandUncertainty){
+	ofname <- sprintf('%s/Intermediate/CovarianceMats/spatialAnalysisFullData_Empirical_allLoc.Rda',scratchDir)
+} else{
+	ofname <- sprintf('%s/Intermediate/CovarianceMats/spatialAnalysisFullData_Empirical.Rda',scratchDir)
+}
 save(lon, lat, dataIndsList, diffMatList, uncEstimate,
-	file=sprintf('%s/Intermediate/CovarianceMats/spatialAnalysisFullData_Empirical.Rda',scratchDir))
+	file = ofname)

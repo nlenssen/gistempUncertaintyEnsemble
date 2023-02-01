@@ -110,5 +110,5 @@ for(k in 1:length(outList)){
 }
 
 save(ensembleGlobalMean, ensembleNHemMean , ensembleSHemMean, ensembleBandMean,
-	file= sprintf('%s/Output/EnsembleStats/meanSeries_NEW.Rda',scratchDir))
+	file= sprintf('%s/meanSeries_NEW.Rda',ensembleOutDir))
 

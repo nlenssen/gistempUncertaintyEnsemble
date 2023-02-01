@@ -136,7 +136,7 @@ for(i in 1:length(lonStarts)){
 
 # save the final
 save(monthlyEnsembleSize, monthlyEnsembleMean, monthlyEnsembleSd, monthlyEnsembleQuantiles,
-	file= sprintf('%s/Output/EnsembleStats/griddedSummaryStatistics.Rda',scratchDir))
+	file= sprintf('%s/griddedSummaryStatistics.Rda',ensembleOutDir))
 
 
 

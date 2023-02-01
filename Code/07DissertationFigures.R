@@ -20,7 +20,7 @@ prodMeanTable <- read.csv('Data/ZonAnn.Ts+dSST.csv')
 prodVars <- names(prodMeanTable)
 
 # load the uncertainty ensemble mean series
-load(sprintf('%s/Output/EnsembleStats/meanSeries.Rda',scratchDir))
+load(sprintf('%s/meanSeries.Rda',ensembleOutDir))
 
 # the dim of the uncertainty ensemble mean files
 ndim1 <- dim(ensembleGlobalMean)[2]
@@ -183,7 +183,7 @@ dev.off()
 ###############################################################################
 # Compare the field statistics
 ###############################################################################
-load(sprintf('%s/Output/EnsembleStats/griddedSummaryStatistics.Rda',scratchDir))
+load(sprintf('%s/griddedSummaryStatistics.Rda',ensembleOutDir))
 
 
 yearVec <- c(1910, 1940, 1970)

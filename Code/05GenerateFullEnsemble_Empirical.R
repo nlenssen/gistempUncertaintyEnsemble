@@ -16,6 +16,9 @@ load(sprintf('%s/Intermediate/LandMasks/landMask_2x2.Rda',scratchDir))
 # load the sampling variance estiamtes
 load(sprintf('%s/Intermediate/CovarianceMats/spatialAnalysisFullData_Empirical.Rda',scratchDir))
 
+# create a month vector of the difference fields to use in building the ensemble
+diffMonthVec <- rep(1:12, ncol(diffMatList[[1]])/12)
+
 ###############################################################################
 # get the ensembles
 ###############################################################################
@@ -51,20 +54,17 @@ dim(anom)[3]==nrow(timeMap)
 fullGridInds <- expand.grid(1:nlon, 1:nlat)
 
 
-###############################################################################
-# Work through the generation of one homog memeber with sampling uncertainty
-###############################################################################
-
-
 # figure out the time stuff for the shortened time domain
 timeInds <- which(timeMap[,1] >= ensembleStartYear)
 timeMapSub <- timeMap[timeInds,]
 nt <- nrow(timeMapSub)
 
 
+
+
 ###############################################################################
 # Make some mask stuff to make each decades coverage consistent for sampling
-# uncertainty reasons
+# uncertainty reasons (handle in a monthly manner)
 ###############################################################################
 
 # Make a decadal mask of land locations with coverage (based on GHCN coverage)
@@ -103,7 +103,7 @@ for(i in 1:12){
 
 singleEnsemble <- function(en){
 	require(ncdf4)
-	require(Rfast)
+
 	cat(paste('Ensemble',en,'of',length(filePaths),'\n'))
 
 	# the single GHCN ensemble output to run and then save
@@ -133,20 +133,6 @@ singleEnsemble <- function(en){
 			gridListInds[i] <- which(dataInds[i,1] == fullGridInds[,1] & dataInds[i,2] == fullGridInds[,2])
 		}
 
-		# get the max length of all of the possible empirical draws from the empirical sampling error
-		# distribution (using 2020 in the 2010s decade for this analysis so need to correct)
-		nDraws <- nSampling*12*10
-	
-		if(d==14){
-			nDraws <- nSampling*12*11
-		}
-
-		# get the timepoints from the ERA analysis to draw from
-		diffMatInds <- sample(1:ncol(diffMatList[[d]]), nDraws, replace = TRUE)
-
-		# construct a sample of the error matricies to use in the ensemble
-		rawSample <- diffMatList[[d]][,diffMatInds]
-
 		# get the inds of the decade we are working on while also
 		# accounting for the last decade not being complete here
 		timeIndsSub <- ((d-1)*120 + 1):min((d*120),nt)
@@ -160,12 +146,20 @@ singleEnsemble <- function(en){
 
 			# loop over each time step and pull in a random draw
 			for(i in 1:length(timeIndsSub)){
+				
+				# pull a random sample of these inds for the current month
+				currentMonth <- timeMap[timeIndsSub[i],2]
+
+				sampleInds <- sample(which(diffMonthVec==currentMonth), nSampling, replace = TRUE)
+				rawSample <- diffMatList[[d]][,sampleInds]
+
 				for(j in 1:nSampling){
 					# empty single time slice to help rearrange data
 					sampleSlice <- matrix(NA, nlon,nlat)
 
+					# pull out nSampling draws from the curr
 					# pull out 10 random draws and rearrange into the matrix form
-					sampleSlice[gridListInds] <- rawSample[,(((i-1)*10) + j)]
+					sampleSlice[gridListInds] <- rawSample[,j]
 
 					# put into the ensemble matrix
 					samplingEnsemble[,,timeIndsSub[i],j] <- anomSubMasked[,,timeIndsSub[i]] + sampleSlice
@@ -182,15 +176,21 @@ singleEnsemble <- function(en){
 					# generate a random chunk size
 					chunkSize <- sample(1:18,1)
 
-					# empty single time slice to help rearrange data
-					sampleSlice <- matrix(0, nlon,nlat)
-
-					# rearrange and save into the out array
-					sampleSlice[gridListInds] <- rawSample[,(((i-1)*nSampling) + j)]
-
+					# get the time inds within the decade
 					tempYearInds <- timeIndsSub[i:(i+chunkSize-1)]
 
+					# get the start month and a sample
+					currentMonth <- timeMap[tempYearInds[1],2]
 
+					# get the sample ind in a way that the full time series doen't run off the 
+					# end of the difference series analysis
+					sampleInd <- 1e10
+					while((sampleInd + chunkSize - 1) > length(diffMonthVec)){
+						sampleInd <- sample(which(diffMonthVec==currentMonth), 1, replace = TRUE)
+					}
+
+					if(sampleInd + chunkSize)
+					# check for the end of the decade and increment i
 					if((i+chunkSize) >= length(timeIndsSub)){
 						tempYearInds <- timeIndsSub[i:length(timeIndsSub)]
 						i <- length(timeIndsSub) + 1
@@ -198,17 +198,19 @@ singleEnsemble <- function(en){
 						i <- i + chunkSize
 					}
 
-					# loop over the months that this particular sampling draw applies to
-					# and add in the sampling unceratinty
-					for(k in 1:length(tempYearInds)){
-						samplingEnsemble[,,tempYearInds[k],j] <- anomSubMasked[,,tempYearInds[k]] + sampleSlice
-					}	
 
+
+					# rearrange and save into the out array
+					sampleSlice      <- matrix(0, nlon,nlat) 
+
+					for(k in 1:length(tempYearInds)){
+						sampleSlice[gridListInds] <- diffMatList[[d]][,(sampleInd + k - 1)]
+
+						samplingEnsemble[,,tempYearInds[k],j] <- anomSubMasked[,,tempYearInds[k]] + sampleSlice
+					}
 				}
 			}
 		}
-
-
 	}
 	##############################
 	# Analysis step

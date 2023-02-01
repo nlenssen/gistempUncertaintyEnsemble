@@ -1,4 +1,17 @@
+source('Namelists/awsFullEnsemble.Rnl')
+
+load(sprintf('%s/Intermediate/CovarianceMats/spatialAnalysisFullData_Empirical.Rda',scratchDir))
+
+load(sprintf('%s/Intermediate/ERA5/anomalyData_ERA_2x2.Rda',scratchDir))
+load(sprintf('%s/Intermediate/LandMasks/landMask_2x2.Rda',scratchDir))
+load(sprintf('%s/Intermediate/GistempProduction/coverageInfo.Rda',scratchDir))
+
+
 nCores <- 10
+
+
+nlon <- length(lon)
+nlat <- length(lat)
 
 
 ###############################################################################
@@ -116,8 +129,14 @@ save(homogGlobalMean,homogNHemMean,homogSHemMean,homogBandMean,
 ###############################################################################
 nSampling <- 200
 
-# load the sampling variance estiamtes
-load(sprintf('%s/Intermediate/CovarianceMats/spatialAnalysisFullData_Empirical.Rda',scratchDir))
+# load the sampling variance estiamtes\
+if(allLocationsLandUncertainty){
+	load(sprintf('%s/Intermediate/CovarianceMats/spatialAnalysisFullData_Empirical_allLoc.Rda',scratchDir))
+} else{
+	load(sprintf('%s/Intermediate/CovarianceMats/spatialAnalysisFullData_Empirical.Rda',scratchDir))
+}
+
+
 
 # some controls for the analysis
 nDraws <- nSampling*12*10
@@ -217,7 +236,13 @@ for(d in 1:nDec){
 	gc()
 }
 
+if(allLocationsLandUncertainty){
+	ofname <- sprintf('%s/Output/LsatAnalysis/samplingMeans.Rda',scratchDir)
+} else{
+	ofname <- sprintf('%s/Output/LsatAnalysis/samplingMeans_allLoc.Rda',scratchDir)
+}
+
 save(samplingGlobalMean,samplingNHemMean,samplingSHemMean,samplingBandMean,
-	file=sprintf('%s/Output/LsatAnalysis/samplingMeans.Rda',scratchDir))
+	file=ofname)
 
 

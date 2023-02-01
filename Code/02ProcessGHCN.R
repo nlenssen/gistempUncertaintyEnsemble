@@ -1,5 +1,7 @@
 # The GHCN ensemble number used
-eNumber <- 'FLs.c700'
+#eNumber <- 'FLs.c700'
+eNumber <- 'FLs.c711'
+
 
 ########################################################################
 # Import the GHCN station metadata into an easy to work with format
@@ -21,8 +23,7 @@ stationID <- data.frame(id,lon,lat, stringsAsFactors=FALSE)
 ########################################################################
 # Import the GHCN station data into an easy to work with format
 ########################################################################
-
-
+# use `cat ./* > allStation.dat` to build the station file
 raw <- readLines(sprintf('%s/Raw/GHCNv4/%s/allStations.dat',scratchDir,eNumber))
 
 dataID <- rep(NA,length(raw))
