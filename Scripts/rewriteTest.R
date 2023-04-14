@@ -6,28 +6,28 @@ preserveVarVec <- c('preserveVarVec', 'timingVec')
 
 
 # Step 1
-# source('Namelists/awsNew.Rnl')
-# timingVec[1] <- system.time(source('CodeRewrite/01ProcessERA.R'))[3]
+source('Namelists/awsNew.Rnl')
+timingVec[1] <- system.time(source('CodeRewrite/01ProcessERA.R'))[3]
 
-# objs <- ls()
-# objs <- objs[-which(objs %in% preserveVarVec)]
-# rm(list=objs)
+objs <- ls()
+objs <- objs[-which(objs %in% preserveVarVec)]
+rm(list=objs)
 
-# # Step 2
-# source('Namelists/awsNew.Rnl')
-# timingVec[2] <- system.time(source('CodeRewrite/02ProcessGHCN.R'))[3]
+# Step 2
+source('Namelists/awsNew.Rnl')
+timingVec[2] <- system.time(source('CodeRewrite/02ProcessGHCN.R'))[3]
 
-# objs <- ls()
-# objs <- objs[-which(objs %in% preserveVarVec)]
-# rm(list=objs)
+objs <- ls()
+objs <- objs[-which(objs %in% preserveVarVec)]
+rm(list=objs)
 
-# # Step 3
-# source('Namelists/awsNew.Rnl')
-# timingVec[3] <- system.time(source('CodeRewrite/03InterpolateFields_NEW.R'))[3]
+# Step 3
+source('Namelists/awsNew.Rnl')
+timingVec[3] <- system.time(source('CodeRewrite/03InterpolateFields.R'))[3]
 
-# objs <- ls()
-# objs <- objs[-which(objs %in% preserveVarVec)]
-# rm(list=objs)
+objs <- ls()
+objs <- objs[-which(objs %in% preserveVarVec)]
+rm(list=objs)
 
 # Step 4
 source('Namelists/awsNew.Rnl')

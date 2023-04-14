@@ -6,7 +6,7 @@ load(sprintf('%s/Intermediate/LandMasks/landMask_merraGrid.Rda',scratchDir))
 load(sprintf('%s/Intermediate/GHCNv4/decadalMasks_Ensemble.Rda',scratchDir))
 
 # shortcut variable for the era5 intermediate dir to make code more readable
-eraDir <- sprintf('%s/Intermediate/ERA5/',scratchDir)
+eraDir <- sprintf('%s/Intermediate/ERA5',scratchDir)
 
 ###############################################################################
 ###############################################################################
@@ -89,7 +89,7 @@ load(sprintf('%s/anomalyData_ERA_merraGrid.Rda',eraDir))
 
 # loop to create for each interpolated field
 for(dec in 1:length(files)){
-	load(sprintf('%s/interpolatedFields/%s',eraDir, files[dec]))
+	load(sprintf('%s/InterpolatedFields/%s',eraDir, files[dec]))
 
 	# unpack
 	lon <- anomalyData$lon

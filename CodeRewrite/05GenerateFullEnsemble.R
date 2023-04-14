@@ -170,6 +170,11 @@ singleEnsemble <- function(en){
 				# rearrange and save into the out array
 				samplingUncertaintyArray <- differenceArray[,,diffArrayInds,d]
 
+				# make it a 3-array if only length of one
+				if(length(tempYearInds) == 1){
+					samplingUncertaintyArray <- array(samplingUncertaintyArray, dim=c(nlon,nlat,1))
+				}
+
 				# make the NA values 0 to not overwrite the sampling vals
 				samplingUncertaintyArray[is.na(samplingUncertaintyArray)] <- 0
 
