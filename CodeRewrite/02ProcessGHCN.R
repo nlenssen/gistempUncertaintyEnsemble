@@ -1,6 +1,4 @@
 # The GHCN ensemble number used
-#eNumber <- 'FLs.c700'
-eNumber <- 'FLs.c711'
 
 
 ########################################################################
@@ -8,7 +6,7 @@ eNumber <- 'FLs.c711'
 ########################################################################
 # Read in the (currently) relevant data from the station data
 
-rawInfo <- readLines(sprintf('%s/Raw/GHCNv4/v4.inv',scratchDir))
+rawInfo <- readLines(sprintf('%s/Raw/GHCNv4/Operational/v4.inv',scratchDir))
 
 # Vectorized to run over all rows of the station file
 
@@ -24,11 +22,23 @@ stationID <- data.frame(id,lon,lat, stringsAsFactors=FALSE)
 # Import the GHCN station data into an easy to work with format
 ########################################################################
 # use `cat ./* > allStation.dat` to build the station file
-raw <- readLines(sprintf('%s/Raw/GHCNv4/%s/allStations.dat',scratchDir,eNumber))
+raw <- readLines(sprintf('%s/Raw/GHCNv4/Operational/ghcnm.tavg.qcf.dat',scratchDir))
 
 dataID <- rep(NA,length(raw))
 stationData <- matrix(NA,nrow=length(raw),ncol=13)
 colnames(stationData) <- c('year', 1:12)
+
+# the function for the ghcn ensemble
+parseDataString <- function(dataString){
+        sapply(seq(from=1, to=nchar(dataString), by=9),
+                                function(i) as.numeric(substr(dataString, i, i+4)))
+}
+# the function for the ghcn operational
+parseDataString2 <- function(dataString){
+        sapply(seq(from=1, to=nchar(dataString), by=8),
+                                function(i) as.numeric(substr(dataString, i, i+4)))
+}
+
 
 # helper function used to parse the data portion of the input string
 # 11 or 12 digit station?
@@ -38,10 +48,10 @@ for(i in 1:length(raw)){
 	setTxtProgressBar(pb, i)
 
 	temp <- raw[i]
-	station <- as.character(substr(temp,1,12))
-	year    <- as.numeric(substr(temp,13,16))
+	station <- as.character(substr(temp,1,11))
+	year    <- as.numeric(substr(temp,12,15))
 
-	data <- parseDataString(substr(temp,19,nchar(temp)))
+	data <- parseDataString2(substr(temp,20,nchar(temp)))
 
 	dataID[i] <- station
 	stationData[i,] <- c(year,data)

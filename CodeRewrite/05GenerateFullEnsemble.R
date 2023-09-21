@@ -1,17 +1,3 @@
-# to pull the ensemble data off of discover, use:
-# rsync -R nlenssen@discover.nccs.nasa.gov:/discover/nobackup/mjhendri/gistemp_ensemble/data/run_ensemble_icemask_100/FLs\*/\*.nc .
-# mv ./discover/nobackup/mjhendri/gistemp_ensemble/data/run_ensemble_icemask_100/* .
-# rm -r ./discover/
-
-# if the csv mean series files are needed, use:
-# rsync -R nlenssen@discover.nccs.nasa.gov:/discover/nobackup/mjhendri/gistemp_ensemble/data/run_ensemble_icemask_100/FLs\*/\*.csv .
-# mv ./discover/nobackup/mjhendri/gistemp_ensemble/data/run_ensemble_icemask_100/* .
-# rm -r ./discover/
-
-
-# remove once running for reals
-source('Namelists/awsNew.Rnl')
-
 
 ###############################################################################
 # Load in some data
@@ -139,7 +125,7 @@ singleEnsemble <- function(en){
 
 			while(i <= length(timeIndsSub)){
 				# generate a random chunk size
-				chunkSize <- sample(1:18,1)
+				chunkSize <- sample(1:12,1)
 
 				# get the time inds within the decade
 				tempYearInds <- timeIndsSub[i:(i+chunkSize-1)]

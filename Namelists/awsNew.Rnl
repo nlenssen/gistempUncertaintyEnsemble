@@ -93,20 +93,14 @@ timeMap <- timeMap[timeMap[,3] <= endYear + (endMonth-1)/12,]
 ensembleStartYear <- 1880
 
 # How many samples to generate in the ensemble
-nSampling <- 10
+nSampling <- 2
 
 # How many of the sampling unc samples to analyze in the means
-nSamples <- 10
+nSamples <- 2
 
 # inds to run the GHCN/ERRST ensemble over (max 108 right now)
 lsatInds <- 1:100
 
 # switch to overwrite existing netcdf files
 overwriteFiles <- TRUE
-
-# iid vs. persistent monthly errors
-iidMonthlySampling <- FALSE
-
-# Use a monthly variable sea ice mask
-monthlySeaIceMask  <- FALSE
 

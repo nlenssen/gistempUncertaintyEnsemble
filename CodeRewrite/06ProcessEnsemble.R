@@ -61,6 +61,11 @@ chunkStatistics <- function(i){
 
 	anomMat <- array(NA, dim=c(lonChunkSize, latChunkSize, nt, nens*nSamples))
 
+	monthlyEnsembleSize      <- list()
+	monthlyEnsembleMean      <- list()
+	monthlyEnsembleSd        <- list()
+	monthlyEnsembleQuantiles <- list()
+
 	for(j in 1:length(latStarts)){
 
 		# load the anomMat with all data in the lon/lat range
@@ -78,11 +83,11 @@ chunkStatistics <- function(i){
 		}
 
 		# any analysis here on the full lon/lat chunk
-		monthlyEnsembleSize<- apply(anomMat,c(1,2,3),function(x) sum(!is.na(x)))
-		monthlyEnsembleMean <- apply(anomMat,c(1,2,3),mean, na.rm=T)
-		monthlyEnsembleSd  <- apply(anomMat,c(1,2,3),sd, na.rm=T)
+		monthlyEnsembleSize[[j]] <- apply(anomMat,c(1,2,3),function(x) sum(!is.na(x)))
+		monthlyEnsembleMean[[j]] <- apply(anomMat,c(1,2,3),mean, na.rm=T)
+		monthlyEnsembleSd[[j]]   <- apply(anomMat,c(1,2,3),sd, na.rm=T)
 
-		monthlyEnsembleQuantiles <- apply(anomMat,c(1,2,3),quantile,
+		monthlyEnsembleQuantiles[[j]] <- apply(anomMat,c(1,2,3),quantile,
 			probs= quantProbs, na.rm=T)
 
 	}
@@ -114,16 +119,14 @@ for(i in 1:length(lonStarts)){
 		lonInds      <- lonStarts[i]:(lonStarts[i] + lonChunkSize - 1)
 		latInds      <- latStarts[j]:(latStarts[j] + latChunkSize - 1)
 
-			
-		tempList <- outList[[i]]
 
 
 		# any analysis here on the full lon/lat chunk
-		monthlyEnsembleSize[lonInds,latInds,] <- tempList[[1]]
-		monthlyEnsembleMean[lonInds,latInds,] <- tempList[[2]]
-		monthlyEnsembleSd[lonInds,latInds,]   <- tempList[[3]]
+		monthlyEnsembleSize[lonInds,latInds,] <- outList[[i]][[1]][[j]]
+		monthlyEnsembleMean[lonInds,latInds,] <- outList[[i]][[2]][[j]]
+		monthlyEnsembleSd[lonInds,latInds,]   <- outList[[i]][[3]][[j]]
 
-		quantileTemp <- tempList[[4]]
+		quantileTemp <- outList[[i]][[4]][[j]]
 
 		for(q in 1:length(quantProbs)){
 			monthlyEnsembleQuantiles[lonInds,latInds,,q] <- quantileTemp[q,,,]

@@ -73,7 +73,7 @@ for(d in 1:nDec){
 
 			for(k in 1:12){
 				monthInds <- which(timeMapERA[,2] == k)
-				uncEstimate[i,j,k,d] <- sd(differenceSeries[monthInds])
+				uncEstimate[i,j,k,d] <- sd(differenceSeries[monthInds], na.rm=T)
 			}
 		}
 	}
@@ -84,4 +84,3 @@ for(d in 1:nDec){
 ofname <- sprintf('%s/Intermediate/SamplingUncertainty/samplingUncertaintyAnalysis.Rda',scratchDir)
 
 save(lon, lat, uncEstimate, differenceArray, timeMapERA, file = ofname)
-

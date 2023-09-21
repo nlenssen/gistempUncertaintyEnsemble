@@ -1,3 +1,6 @@
+landMeans  <- TRUE
+oceanMeans <- TRUE
+
 ###############################################################################
 # get the important metadata before running anymore
 ###############################################################################
@@ -52,7 +55,7 @@ ALs <- landMaskList$landAreaList$ALs
 
 indexList <- expand.grid(list(i=1:nens, j=1:nSamples))
 
-chunkTimeMeans <- function(k){
+chunkTimeMeans <- function(k, mask=NULL){
 	require(ncdf4)
 
 
@@ -63,9 +66,9 @@ chunkTimeMeans <- function(k){
 	anomArray <- ncvar_get(handle, 'tempAnom', start=c(1,1,1,j), count =c(-1, -1, -1, 1))
 	nc_close(handle)
 
-	# mean step
-	meanTemp <- globalMean(anomArray, mask=NULL, lat, nCores=1,
-		zoneMask, simpleMean=FALSE, ALn, ALs)
+	# mean step (weights are 1/2,1/2 as we have full coverage here (SST+LSAT))
+	meanTemp <- globalMean(anomArray, mask=mask, lat, nCores=1,
+		zoneMask, simpleMean=FALSE, 1/2, 1/2)
 
 	rm(anomalyData)
 	gc()
@@ -74,14 +77,13 @@ chunkTimeMeans <- function(k){
 }
 
 
-# run the analysis
+# run the analysis (Total Global)
 cl <- makeCluster(nCores_Step6b)
 registerDoParallel(cl)
 
 outList <- foreach(k=1:nrow(indexList)) %dopar% chunkTimeMeans(k)
 
 stopCluster(cl)
-
 
 
 # Process the output
@@ -111,4 +113,103 @@ for(k in 1:length(outList)){
 
 save(ensembleGlobalMean, ensembleNHemMean , ensembleSHemMean, ensembleBandMean,
 	file= sprintf('%s/meanSeries_NEW.Rda',ensembleOutDir))
+
+
+###############################################################################
+# calculate the LSAT ONLY global and band means
+###############################################################################
+
+if(landMeans){
+	# create the land mask (currently not accounting for monthly sea ice)
+	landMask <- landMaskList$maximalMask
+
+
+	# run the analysis (Land Only)
+	cl <- makeCluster(nCores_Step6b)
+	registerDoParallel(cl)
+
+	outList <- foreach(k=1:nrow(indexList)) %dopar% chunkTimeMeans(k, 
+															mask=landMask)
+
+	stopCluster(cl)
+
+
+	# Process the output
+	ensembleGlobalMean <- array(NA, dim=c(nt, nens, nSamples))
+	ensembleNHemMean   <- array(NA, dim=c(nt, nens, nSamples))
+	ensembleSHemMean   <- array(NA, dim=c(nt, nens, nSamples))
+
+	ensembleBandMean   <- array(NA, dim=c(nt, 8, nens, nSamples))	
+
+
+	for(k in 1:length(outList)){
+
+			# pull a single results list
+			tempList <- outList[[k]]
+
+			# get the array inds
+			i <- indexList[k,1]
+			j <- indexList[k,2]
+
+			# package results step
+			ensembleGlobalMean[,i,j] <- tempList$global
+			ensembleNHemMean[,i,j]   <- tempList$nh
+			ensembleSHemMean[,i,j]   <- tempList$sh
+			ensembleBandMean[,,i,j]   <- tempList$bands
+
+	}
+
+	save(ensembleGlobalMean, ensembleNHemMean , ensembleSHemMean, ensembleBandMean,
+		file= sprintf('%s/meanSeries_NEW_Land.Rda',ensembleOutDir))
+}
+
+
+
+###############################################################################
+# calculate the SST ONLY global and band means
+###############################################################################
+
+if(oceanMeans){
+	# create the land mask (currently not accounting for monthly sea ice)
+	oceanMask <- ifelse(is.na(landMaskList$maximalMask),1,NA)
+
+
+	# run the analysis (Land Only)
+	cl <- makeCluster(nCores_Step6b)
+	registerDoParallel(cl)
+
+	outList <- foreach(k=1:nrow(indexList)) %dopar% chunkTimeMeans(k,
+															mask=oceanMask)
+
+	stopCluster(cl)
+
+
+	# Process the output
+	ensembleGlobalMean <- array(NA, dim=c(nt, nens, nSamples))
+	ensembleNHemMean   <- array(NA, dim=c(nt, nens, nSamples))
+	ensembleSHemMean   <- array(NA, dim=c(nt, nens, nSamples))
+
+	ensembleBandMean   <- array(NA, dim=c(nt, 8, nens, nSamples))	
+
+
+	for(k in 1:length(outList)){
+
+			# pull a single results list
+			tempList <- outList[[k]]
+
+			# get the array inds
+			i <- indexList[k,1]
+			j <- indexList[k,2]
+
+			# package results step
+			ensembleGlobalMean[,i,j] <- tempList$global
+			ensembleNHemMean[,i,j]   <- tempList$nh
+			ensembleSHemMean[,i,j]   <- tempList$sh
+			ensembleBandMean[,,i,j]   <- tempList$bands
+
+	}
+
+	save(ensembleGlobalMean, ensembleNHemMean , ensembleSHemMean, ensembleBandMean,
+		file= sprintf('%s/meanSeries_NEW_Ocean.Rda',ensembleOutDir))
+}
 
