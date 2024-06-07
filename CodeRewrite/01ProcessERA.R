@@ -62,6 +62,7 @@ inds <- which(timeMapFull[,1] <= endYearERA)
 tempArray <- tempArrayFull[,,inds]
 timeMap   <- timeMapFull[inds,]
 
+
 ########################################
 # STEP (3) Compute Anomalies on the grid
 ########################################
@@ -81,6 +82,8 @@ for(month in 1:12){
 	}
 }
 
+eraClimList <- list(lon=lon,lat=lat,clim=monthNorm,timeMap=timeMap)
+save(eraClimList, file=sprintf('%s/Intermediate/ERA5/climData_ERA_2x2.Rda',scratchDir))
 ###########################
 # STEP (4) Create Zone Mask
 ###########################

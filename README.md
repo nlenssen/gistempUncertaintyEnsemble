@@ -17,10 +17,10 @@ Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Reto Ruedy, NASA GISTEMP Tea
 
 
 
-## GISTEMP LSAT+SST Ensemble
+## GHCN-ERSST-GISTEMP Ensemble
 * Currently being run on Discover
 * 100 member ensemble of operational python GISTEMP run with input from the GHCN and ERSST uncertainty ensembles
-* Contains all relevant sources of uncertainty other than the LSAT sampling uncertainty which will be added using the following R code
+* Contains all relevant sources of uncertainty other than the LSAT sampling uncertainty which will be added using the following R codebase
 
 ## Steps
 
@@ -34,7 +34,7 @@ Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Reto Ruedy, NASA GISTEMP Tea
 
 ### Step 4: Spatial Analysis of Sampling Errors
 
-*  Calculation of sampling error fields as in `diffMat` and `dataInds` from `spatialUncertaintyCoarse.R` at 2x2 resolution
+*  Calculation of sampling reconstruction error fields as in `diffMat` and `dataInds` from `spatialUncertaintyCoarse.R` at 2x2 resolution
 
 ### Step 5: Generate Full Ensemble
 
@@ -42,8 +42,6 @@ Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Reto Ruedy, NASA GISTEMP Tea
 
 ### Step 6: Process Ensemble
 
-### Step 7: Make Figures
+### Step 7: Run the LSAT decomponsition analyses
 
-
-
-# gistempAWS
+### Step 8: Make Figures

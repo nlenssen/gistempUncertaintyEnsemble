@@ -61,9 +61,18 @@ for(d in 1:nDec){
 			trueVec <- anomalyField[i,j,]
 			maskVec <- interpolatedField[i,j,]
 
+			monthseq <- rep(1:12, length=length(trueVec))
+
 			if(all(is.na(trueVec)))	next()
 			if(all(is.na(maskVec))){
-				uncEstimate[i,j,,d] <- NA
+				if(allLocationsLandUncertainty){
+					for(k in 1:12){
+						uncEstimate[i,j,k,d] <- sd(trueVec[monthseq==k],na.rm=T)
+					}
+				} else{
+					uncEstimate[i,j,,d] <- NA
+				}
+
 				next()
 			}
 
@@ -80,7 +89,10 @@ for(d in 1:nDec){
 
 }
 # save the important output
-
-ofname <- sprintf('%s/Intermediate/SamplingUncertainty/samplingUncertaintyAnalysis.Rda',scratchDir)
+if(allLocationsLandUncertainty){
+	ofname <- sprintf('%s/Intermediate/SamplingUncertainty/samplingUncertaintyAnalysis_allLoc.Rda',scratchDir)
+} else{
+	ofname <- sprintf('%s/Intermediate/SamplingUncertainty/samplingUncertaintyAnalysis.Rda',scratchDir)
+}
 
 save(lon, lat, uncEstimate, differenceArray, timeMapERA, file = ofname)

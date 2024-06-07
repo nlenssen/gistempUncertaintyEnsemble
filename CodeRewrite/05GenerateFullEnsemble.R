@@ -1,3 +1,5 @@
+# seed for reproducibility
+set.seed(12345)
 
 ###############################################################################
 # Load in some data
@@ -5,11 +7,17 @@
 # load in the land mask
 load(sprintf('%s/Intermediate/LandMasks/landMask_2x2.Rda',scratchDir))
 
-# load the sampling variance estiamtes
-load(sprintf('%s/Intermediate/SamplingUncertainty/samplingUncertaintyAnalysis.Rda',scratchDir))
+# load the sampling variance estimate
+if(allLocationsLandUncertainty){
+	ofname <- sprintf('%s/Intermediate/SamplingUncertainty/samplingUncertaintyAnalysis_allLoc.Rda',scratchDir)
+} else{
+	ofname <- sprintf('%s/Intermediate/SamplingUncertainty/samplingUncertaintyAnalysis.Rda',scratchDir)
+}
+
+load(ofname)
 
 ###############################################################################
-# get the ensembles
+# get the GHCN-ERSST ensemble paths
 ###############################################################################
 filePaths <- system(sprintf('ls %s/Intermediate/GistempLandEnsemble/F*/*.nc',scratchDir),intern=T)[lsatInds] 
 nens <- length(filePaths)
@@ -180,41 +188,43 @@ singleEnsemble <- function(en){
 	# define dimensions
 	londim      <- ncdim_def("lon","degrees_east",as.integer(lon)) 
 	latdim      <- ncdim_def("lat","degrees_north",as.integer(lat)) 
-	timeDim     <- ncdim_def("time",'Year',as.integer(time))
-	recordDim   <- ncdim_def("record",'ensemble_member',as.integer(memberInds),unlim=TRUE)
+	timeDim     <- ncdim_def("time",'Months since 12/1879',as.integer(1:nt))
 
 	# define variables
 	fillvalue <- -9999
 	dlname <- "LSAT Anomaly Uncertainty Ensemble"
-	temp_def <- ncvar_def("tempAnom",'Kelvin',list(londim,latdim,timeDim,recordDim),
+	temp_def <- ncvar_def("tempAnom",'Kelvin',list(londim,latdim,timeDim),
 							fillvalue,dlname, prec="single")
 
-	# create netCDF file and put arrays
-	ncfname <- sprintf('%s/ensembleChunk_%03d.nc',ensembleOutDir,en)
 
-	# remove exisitng netcdf 
-	if(file.exists(ncfname) & overwriteFiles) file.remove(ncfname)
+	# loop over members
+	for(m in 1:length(memberInds)){
+		# create netCDF file and put arrays
+		ncfname <- sprintf('%s/ensembleChunk_%04d.nc',ensembleOutDir,memberInds[m])
 
-	ncout <- nc_create(ncfname,list(temp_def),force_v4=TRUE)
+		# remove exisitng netcdf 
+		if(file.exists(ncfname) & overwriteFiles) file.remove(ncfname)
 
-	# put variables
-	ncvar_put(ncout,temp_def,samplingEnsemble)
+		ncout <- nc_create(ncfname,list(temp_def),force_v4=TRUE)
 
-	# put additional attributes into dimension and data variables
-	ncatt_put(ncout,"lon","axis","X")
-	ncatt_put(ncout,"lat","axis","Y")
-	ncatt_put(ncout,"time","axis","T")
+		# put variables
+		ncvar_put(ncout,temp_def,samplingEnsemble[,,,m])
+
+		# put additional attributes into dimension and data variables
+		ncatt_put(ncout,"lon","axis","X")
+		ncatt_put(ncout,"lat","axis","Y")
+		ncatt_put(ncout,"time","axis","T")
 
 
-	# add global attributes
-	ncatt_put(ncout,0,"title",'UncertaintyEnsemble')
-	ncatt_put(ncout,0,"institution",'NASA GISTEMP')
-	history <- paste("N. Lenssen", date(), sep=", ")
-	ncatt_put(ncout,0,"history",history)
+		# add global attributes
+		ncatt_put(ncout,0,"title",'Uncertainty Ensemble')
+		ncatt_put(ncout,0,"institution",'NASA GISTEMP')
+		history <- paste("N. Lenssen", date(), sep=", ")
+		ncatt_put(ncout,0,"history",history)
 
-	# CRITICAL: close the netcdf so it is readable
-	nc_close(ncout)
-
+		# CRITICAL: close the netcdf so it is readable
+		nc_close(ncout)
+	}
 	# save(samplingEnsemble,file=sprintf('Data/Ensemble/ensembleChunk_%03d.Rda',en))
 }
 

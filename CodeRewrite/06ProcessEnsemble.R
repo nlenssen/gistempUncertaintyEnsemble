@@ -18,7 +18,7 @@ handle <- nc_open(filePaths[1])
 lon    <- ncvar_get(handle, 'lon')
 lat    <- ncvar_get(handle, 'lat')
 
-anomArray <- ncvar_get(handle, 'tempAnom', start=c(1,1,1,1), count =c(-1, -1, -1, 1))
+anomArray <- ncvar_get(handle, 'tempAnom')
 
 nlon <- length(lon)
 nlat <- length(lat)
@@ -59,7 +59,7 @@ quantProbs <- c(0.025,0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975)
 chunkStatistics <- function(i){
 	require(ncdf4)
 
-	anomMat <- array(NA, dim=c(lonChunkSize, latChunkSize, nt, nens*nSamples))
+	anomMat <- array(NA, dim=c(lonChunkSize, latChunkSize, nt, nens))
 
 	monthlyEnsembleSize      <- list()
 	monthlyEnsembleMean      <- list()
@@ -72,13 +72,11 @@ chunkStatistics <- function(i){
 		for(k in 1:nens){
 			lonInds      <- lonStarts[i]:(lonStarts[i] + lonChunkSize - 1)
 			latInds      <- latStarts[j]:(latStarts[j] + latChunkSize - 1)
-			ensembleInds <- (1+(k-1)*nSamples):(k*nSamples)
-			
-
+		
 			handle <- nc_open(filePaths[k])
-			anomMat[,,,ensembleInds] <- ncvar_get(handle, 'tempAnom',
-													start=c(lonStarts[i],latStarts[j],1,1),
-													count =c(lonChunkSize, latChunkSize, -1, nSamples))
+			anomMat[,,,k] <- ncvar_get(handle, 'tempAnom',
+													start=c(lonStarts[i],latStarts[j],1),
+													count =c(lonChunkSize, latChunkSize, -1))
 			nc_close(handle)	
 		}
 

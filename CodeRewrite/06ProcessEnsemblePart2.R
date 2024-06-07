@@ -21,7 +21,7 @@ handle <- nc_open(filePaths[1])
 lon    <- ncvar_get(handle, 'lon')
 lat    <- ncvar_get(handle, 'lat')
 
-anomArray <- ncvar_get(handle, 'tempAnom', start=c(1,1,1,1), count =c(-1, -1, -1, 1))
+anomArray <- ncvar_get(handle, 'tempAnom')
 
 nlon <- length(lon)
 nlat <- length(lat)
@@ -51,19 +51,11 @@ ALs <- landMaskList$landAreaList$ALs
 # calculate the global and band means
 ###############################################################################
 
-
-
-indexList <- expand.grid(list(i=1:nens, j=1:nSamples))
-
 chunkTimeMeans <- function(k, mask=NULL){
 	require(ncdf4)
 
-
-	i <- indexList[k,1]
-	j <- indexList[k,2]
-
-	handle <- nc_open(filePaths[i])
-	anomArray <- ncvar_get(handle, 'tempAnom', start=c(1,1,1,j), count =c(-1, -1, -1, 1))
+	handle <- nc_open(filePaths[k])
+	anomArray <- ncvar_get(handle, 'tempAnom')
 	nc_close(handle)
 
 	# mean step (weights are 1/2,1/2 as we have full coverage here (SST+LSAT))
@@ -81,17 +73,17 @@ chunkTimeMeans <- function(k, mask=NULL){
 cl <- makeCluster(nCores_Step6b)
 registerDoParallel(cl)
 
-outList <- foreach(k=1:nrow(indexList)) %dopar% chunkTimeMeans(k)
+outList <- foreach(k=1:nens) %dopar% chunkTimeMeans(k)
 
 stopCluster(cl)
 
 
 # Process the output
-ensembleGlobalMean <- array(NA, dim=c(nt, nens, nSamples))
-ensembleNHemMean   <- array(NA, dim=c(nt, nens, nSamples))
-ensembleSHemMean   <- array(NA, dim=c(nt, nens, nSamples))
+ensembleGlobalMean <- array(NA, dim=c(nt, nens))
+ensembleNHemMean   <- array(NA, dim=c(nt, nens))
+ensembleSHemMean   <- array(NA, dim=c(nt, nens))
 
-ensembleBandMean   <- array(NA, dim=c(nt, 8, nens, nSamples))	
+ensembleBandMean   <- array(NA, dim=c(nt, 8, nens))	
 
 
 for(k in 1:length(outList)){
@@ -99,15 +91,11 @@ for(k in 1:length(outList)){
 		# pull a single results list
 		tempList <- outList[[k]]
 
-		# get the array inds
-		i <- indexList[k,1]
-		j <- indexList[k,2]
-
 		# package results step
-		ensembleGlobalMean[,i,j] <- tempList$global
-		ensembleNHemMean[,i,j]   <- tempList$nh
-		ensembleSHemMean[,i,j]   <- tempList$sh
-		ensembleBandMean[,,i,j]   <- tempList$bands
+		ensembleGlobalMean[,k] <- tempList$global
+		ensembleNHemMean[,k]   <- tempList$nh
+		ensembleSHemMean[,k]   <- tempList$sh
+		ensembleBandMean[,,k]   <- tempList$bands
 
 }
 
@@ -128,18 +116,17 @@ if(landMeans){
 	cl <- makeCluster(nCores_Step6b)
 	registerDoParallel(cl)
 
-	outList <- foreach(k=1:nrow(indexList)) %dopar% chunkTimeMeans(k, 
-															mask=landMask)
+	outList <- foreach(k=1:nens) %dopar% chunkTimeMeans(k, mask=landMask)
 
 	stopCluster(cl)
 
 
 	# Process the output
-	ensembleGlobalMean <- array(NA, dim=c(nt, nens, nSamples))
-	ensembleNHemMean   <- array(NA, dim=c(nt, nens, nSamples))
-	ensembleSHemMean   <- array(NA, dim=c(nt, nens, nSamples))
+	ensembleGlobalMean <- array(NA, dim=c(nt, nens))
+	ensembleNHemMean   <- array(NA, dim=c(nt, nens))
+	ensembleSHemMean   <- array(NA, dim=c(nt, nens))
 
-	ensembleBandMean   <- array(NA, dim=c(nt, 8, nens, nSamples))	
+	ensembleBandMean   <- array(NA, dim=c(nt, 8, nens))	
 
 
 	for(k in 1:length(outList)){
@@ -147,15 +134,11 @@ if(landMeans){
 			# pull a single results list
 			tempList <- outList[[k]]
 
-			# get the array inds
-			i <- indexList[k,1]
-			j <- indexList[k,2]
-
 			# package results step
-			ensembleGlobalMean[,i,j] <- tempList$global
-			ensembleNHemMean[,i,j]   <- tempList$nh
-			ensembleSHemMean[,i,j]   <- tempList$sh
-			ensembleBandMean[,,i,j]   <- tempList$bands
+			ensembleGlobalMean[,k] <- tempList$global
+			ensembleNHemMean[,k]   <- tempList$nh
+			ensembleSHemMean[,k]   <- tempList$sh
+			ensembleBandMean[,,k]   <- tempList$bands
 
 	}
 
@@ -178,18 +161,17 @@ if(oceanMeans){
 	cl <- makeCluster(nCores_Step6b)
 	registerDoParallel(cl)
 
-	outList <- foreach(k=1:nrow(indexList)) %dopar% chunkTimeMeans(k,
-															mask=oceanMask)
+	outList <- foreach(k=1:nens) %dopar% chunkTimeMeans(k, mask=oceanMask)
 
 	stopCluster(cl)
 
 
 	# Process the output
-	ensembleGlobalMean <- array(NA, dim=c(nt, nens, nSamples))
-	ensembleNHemMean   <- array(NA, dim=c(nt, nens, nSamples))
-	ensembleSHemMean   <- array(NA, dim=c(nt, nens, nSamples))
+	ensembleGlobalMean <- array(NA, dim=c(nt, nens))
+	ensembleNHemMean   <- array(NA, dim=c(nt, nens))
+	ensembleSHemMean   <- array(NA, dim=c(nt, nens))
 
-	ensembleBandMean   <- array(NA, dim=c(nt, 8, nens, nSamples))	
+	ensembleBandMean   <- array(NA, dim=c(nt, 8, nens))	
 
 
 	for(k in 1:length(outList)){
@@ -197,15 +179,11 @@ if(oceanMeans){
 			# pull a single results list
 			tempList <- outList[[k]]
 
-			# get the array inds
-			i <- indexList[k,1]
-			j <- indexList[k,2]
-
 			# package results step
-			ensembleGlobalMean[,i,j] <- tempList$global
-			ensembleNHemMean[,i,j]   <- tempList$nh
-			ensembleSHemMean[,i,j]   <- tempList$sh
-			ensembleBandMean[,,i,j]   <- tempList$bands
+			ensembleGlobalMean[,k] <- tempList$global
+			ensembleNHemMean[,k]   <- tempList$nh
+			ensembleSHemMean[,k]   <- tempList$sh
+			ensembleBandMean[,,k]   <- tempList$bands
 
 	}
 
