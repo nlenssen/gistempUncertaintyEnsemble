@@ -64,4 +64,8 @@ This is the analysis used to decompose the LSAT uncertainty into sampling and ho
 
 ### Step 8: Create Figures
 
-* Create all figures in Lenssen et al. 2024
+* Create all figures in Lenssen et al. (2024)
+
+## Versions
+
+v1.0.0 Public release of codebase alongside Lenssen et al. (2024)
