@@ -1,5 +1,5 @@
 # GISTEMP Uncertainty Ensemble Source Code
-Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Reto Ruedy, NASA GISTEMP Team
+Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Peter Jacobs, Matthew Menne, Reto Ruedy, NASA GISTEMP Team
 
 ## Outline of Codebase
 
