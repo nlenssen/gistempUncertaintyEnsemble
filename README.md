@@ -17,6 +17,11 @@ Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Reto Ruedy, NASA GISTEMP Tea
 `ensembleOutDir/` The directory where the final ensemble and related analyses are saved
 `plotdir/` The directory figures (in PDF format) are written to
 
+## Recommended Architecture
+
+This analysis was run on an AWS m7i.24xlarge (96 core, 384 GB RAM) instance with a mounted solid-state drive. As this analysis is often I/O limited, a SSD can dramatically improve the wall-time for running the full analysis.
+
+The analysis can be run on smaller clusters, but the number of cores used for various steps will need to be adjusted in `Namelists/awsNamelist.Rnl`. The limiting factor will generally be the avaiaible memory, not the number of avaiable cores.
 
 ## GHCN-ERSST-GISTEMP Ensemble
 * Currently being run on NASA Discover
