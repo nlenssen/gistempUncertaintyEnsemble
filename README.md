@@ -16,6 +16,7 @@ Current version: v1.0.0
 ## Directories
 
 `scratchDir/` Contains the majority of the analysis files. This will be 50+ GB so will often not fit in a home directory on a remote cluster. This directory should have `Raw/`, `Intermediate/`, and `Output/` subdirectories.
+
 `ensembleOutDir/` The directory where the final ensemble and related analyses are saved
 `plotdir/` The directory figures (in PDF format) are written to
 
