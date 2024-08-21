@@ -68,10 +68,11 @@ A huge thank you to Hoot Thompson, Dorian Crockrell, Dan'l Pierce, Garrison Vaug
 
 ### Step 7: Run the LSAT decomponsition analyses
 
-This is the analysis used to decompose the LSAT uncertainty into sampling and homogenization components as in 
+This is the analysis used to decompose the LSAT uncertainty into sampling and homogenization components
 
-* Step 6a calculates gridded statistics from the full 200-member ensemble
-* Step 6b calculates time-series statistics from the full 200-member ensemble
+* Step 7a generates the LSAT homogenization ensemble and LSAT sampling ensemble
+* Step 7b calculates gridded statistics from the full 200-member ensemble
+* Step 7c calculates time-series statistics from the full 200-member ensemble
 
 ### Step 8: Create Figures
 
