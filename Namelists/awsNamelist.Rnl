@@ -1,49 +1,58 @@
+###############################################################################
+###############################################################################
+# The namelist for the GISTEMP ensemble analysis. Contains relevant parameters
+# for controlling the analysis
+
+# GISTEMP Uncertainty Ensemble
+# Version 1.0.0 (August 21, 2024)
+# Nathan Lenssen (lenssen@mines.edu)
+# https://data.giss.nasa.gov/gistemp/
+###############################################################################
+###############################################################################
+
 # packages
 library(fields)
 library(RColorBrewer)
-library(Rfast)
 library(foreach)
 library(doParallel)
 library(ncdf4)
 library(abind)
-
-# switch to move between the two systems
-newComputer <- FALSE
+library(weights)
+library(zoo)
 
 #####
 # Set paths
 #####
 
-if(newComputer){
-	# NEW COMPUTER
-	# separate between home (fast access) and scratch (slower access) if helpful
-	homeDir    <- '/Users/nale4362/Dropbox'
-	scratchDir <- '/Users/nale4362/Documents/GistempEnsembleData'
-	ensembleOutDir <- sprintf('%s/Output/FullEnsemble',scratchDir)
-} else{
-	# OLD COMPUTER
-	# separate between home (fast access) and scratch (slower access) if helpful
-	homeDir    <- '/Users/lenssen/Dropbox'
-	scratchDir <- '/Users/lenssen/Documents/GistempEnsembleData'
-	ensembleOutDir <- '/Volumes/Archive/GistempFullEnsemble'
-}
+# whether the full LSAT sampling uncertainty field is included in the ensemble
+# IMPORTANT: Set to TRUE for generating the ensemble used to calculate
+# large-scale mean series such a global, NH/SH, zonal means, etc.
+
+allLocationsLandUncertainty <- FALSE
+
+homeDir <- '~'
+scratchDir <- '/mnt/data/GistempEnsembleData'
+ensembleOutDir <- sprintf('%s/Output/FullEnsemble',scratchDir) 
 
 # link to the Lenssen et al (2019) codebase
 gistempUncDir  <- sprintf('%s/GistempUncertainty', homeDir)
 
 # directory to plot in
-plotdir <- '~/Desktop/scratchFigures'
+plotdir <- '~/scratchFigures'
 
 ###############################################################################
 # Major settings for the whole code
 ###############################################################################
 
 # source the functions needed
-source(sprintf('%s/Code/Functions.R',gistempUncDir))
+source('Code/Functions_Lenssen2019.R')
 source('Code/Functions.R')
 
-# number of cores to run
-nCores <- 2
+# number of cores to run for parallel steps (for 96 Core AWS instance)
+nCores_Step3  <- 14
+nCores_Step5  <- 10
+nCores_Step6a <- 20 
+nCores_Step6b <- 50
 
 
 # flags for the spatial analysis variograms
@@ -51,12 +60,12 @@ variogramTesting <- TRUE
 plotting <- TRUE
 
 
+
 ###############################################################################
 # ERA Analysis Settings
 ###############################################################################
 
-# this will eventually have to be tweaked as we include more ERA data
-# NEED TO PULL NEW DATA AND UPDATE
+# this can be tweaked as we include more ERA data
 startYearERA <- 1950
 endYearERA   <- 2020
 
@@ -100,20 +109,14 @@ timeMap <- timeMap[timeMap[,3] <= endYear + (endMonth-1)/12,]
 ensembleStartYear <- 1880
 
 # How many samples to generate in the ensemble
-nSampling <- 10
+nSampling <- 2
 
 # How many of the sampling unc samples to analyze in the means
-nSamples <- 5
+nSamples <- 2
 
 # inds to run the GHCN/ERRST ensemble over (max 108 right now)
 lsatInds <- 1:100
 
 # switch to overwrite existing netcdf files
 overwriteFiles <- TRUE
-
-# iid vs. persistent monthly errors
-iidMonthlySampling <- FALSE
-
-# Use a monthly variable sea ice mask
-monthlySeaIceMask  <- FALSE
 

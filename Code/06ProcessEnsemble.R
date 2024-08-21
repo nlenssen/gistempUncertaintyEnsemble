@@ -1,3 +1,14 @@
+###############################################################################
+###############################################################################
+# Calculate the key gridded statistics from the ensemble
+
+# GISTEMP Uncertainty Ensemble
+# Version 1.0.0 (August 21, 2024)
+# Nathan Lenssen (lenssen@mines.edu)
+# https://data.giss.nasa.gov/gistemp/
+###############################################################################
+###############################################################################
+
 # load in the land and zone mask
 load(sprintf('%s/Intermediate/LandMasks/landMask_2x2.Rda',scratchDir))
 

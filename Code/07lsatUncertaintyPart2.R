@@ -1,3 +1,14 @@
+###############################################################################
+###############################################################################
+# Calculate the key series statistics for the LSAT analysis
+
+# GISTEMP Uncertainty Ensemble
+# Version 1.0.0 (August 21, 2024)
+# Nathan Lenssen (lenssen@mines.edu)
+# https://data.giss.nasa.gov/gistemp/
+###############################################################################
+###############################################################################
+
 # pull step03 analysis for the sampling unc
 load(sprintf('%s/Intermediate/SamplingUncertainty/samplingUncertaintyAnalysis.Rda',scratchDir))
 

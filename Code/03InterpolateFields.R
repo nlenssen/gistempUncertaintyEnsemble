@@ -1,3 +1,15 @@
+###############################################################################
+###############################################################################
+# Interpolate ERA5 following the operational GISTEMP method
+
+# GISTEMP Uncertainty Ensemble
+# Version 1.0.0 (August 21, 2024)
+# Nathan Lenssen (lenssen@mines.edu)
+# https://data.giss.nasa.gov/gistemp/
+###############################################################################
+###############################################################################
+
+
 # load in the necessary data
 # anomaly and land mask data from this workflow
 load(sprintf('%s/Intermediate/LandMasks/landMask_merraGrid.Rda',scratchDir))

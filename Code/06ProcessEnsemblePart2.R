@@ -1,3 +1,16 @@
+###############################################################################
+###############################################################################
+# Calculate the key time-seres statistics from the ensemble
+
+# GISTEMP Uncertainty Ensemble
+# Version 1.0.0 (August 21, 2024)
+# Nathan Lenssen (lenssen@mines.edu)
+# https://data.giss.nasa.gov/gistemp/
+###############################################################################
+###############################################################################
+
+
+# calculate land-only and ocean-only means as well as the combined means
 landMeans  <- TRUE
 oceanMeans <- TRUE
 

@@ -34,14 +34,22 @@ Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Reto Ruedy, NASA GISTEMP Tea
 
 ### Step 4: Spatial Analysis of Sampling Errors
 
-*  Calculation of sampling reconstruction error fields as in `diffMat` and `dataInds` from `spatialUncertaintyCoarse.R` at 2x2 resolution
+*  Empirical estimation of sampling error using the reconstruction error fields as in `diffMat` and `dataInds` from `spatialUncertaintyCoarse.R` at 2x2 resolution
 
 ### Step 5: Generate Full Ensemble
 
-* Pull data from discover, generate full ensemble (ERRST, GHCN + Sampling) NetCDF file at 2x2 grid
+* Generate full ensemble (ERRST, GHCN + Sampling) NetCDF file at 2x2 grid
 
 ### Step 6: Process Ensemble
 
+* Step 6a calculates gridded statistics from the full 200-member ensemble
+* Step 6b calculates time-series statistics from the full 200-member ensemble
+
 ### Step 7: Run the LSAT decomponsition analyses
 
-### Step 8: Make Figures
+This is the analysis used to decompose the LSAT uncertainty into sampling and homogenization components as in 
+
+* Step 6a calculates gridded statistics from the full 200-member ensemble
+* Step 6b calculates time-series statistics from the full 200-member ensemble
+
+### Step 8: Create Figures
