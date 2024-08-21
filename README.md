@@ -21,7 +21,7 @@ Current version: v1.0.0
 
 ## Recommended Architecture
 
-This analysis was run on an AWS m7i.24xlarge (96 core, 384 GB RAM) instance with a mounted solid-state drive. As this analysis is often I/O limited, a SSD can dramatically improve the wall-time for running the full analysis.
+This analysis was run on an AWS hpc6a.48xlarge (96 core, 384 GB RAM) instance with 300GB of gp2 (SSD) mounted to the instance. As this analysis is often I/O limited, a SSD can dramatically improve the wall-time for running the full analysis.
 
 The analysis can be run on smaller clusters, but the number of cores used for various steps will need to be adjusted in `Namelists/awsNamelist.Rnl`. The limiting factor will generally be the avaiaible memory, not the number of avaiable cores.
 
