@@ -21,21 +21,24 @@ library(weights)
 library(zoo)
 
 #####
-# Set paths
+# KEY PARAMETER FOR LSAT UNCERTAINTY
 #####
 
-# whether the full LSAT sampling uncertainty field is included in the ensemble
+# a switch to determine if the full LSAT sampling uncertainty field is included
+# in the ensemble.
+
 # IMPORTANT: Set to TRUE for generating the ensemble used to calculate
 # large-scale mean series such a global, NH/SH, zonal means, etc.
 
 allLocationsLandUncertainty <- FALSE
 
-homeDir <- '~'
+
+#####
+# Set paths
+#####
+
 scratchDir <- '/mnt/data/GistempEnsembleData'
 ensembleOutDir <- sprintf('%s/Output/FullEnsemble',scratchDir) 
-
-# link to the Lenssen et al (2019) codebase
-gistempUncDir  <- sprintf('%s/GistempUncertainty', homeDir)
 
 # directory to plot in
 plotdir <- './Figures'

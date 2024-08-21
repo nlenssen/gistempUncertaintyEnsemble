@@ -11,14 +11,17 @@ Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Reto Ruedy, NASA GISTEMP Tea
 
 `Namelists/` Contains parameters for the analysis. Most changes to the behavior of the analysis is done by changing values in the namelist. In particular, the data directory paths are set here (see next section for more information)
 
-`Scripts/` (Work in progress) Contains master scripts to run the full analysis with one command.
+`Scripts/` Contains a master script to run the full analysis with one command.
 
 ## Data Directories
 
+`scratchDir/` Contains the majority of the analysis files. This will be 50+ GB so will often not fit in a home directory on a remote cluster
+`ensembleOutDir/` The directory where the final ensemble and related analyses are saved
+`plotdir/` The directory figures (in PDF format) are written to
 
 
 ## GHCN-ERSST-GISTEMP Ensemble
-* Currently being run on Discover
+* Currently being run on NASA Discover
 * 100 member ensemble of operational python GISTEMP run with input from the GHCN and ERSST uncertainty ensembles
 * Contains all relevant sources of uncertainty other than the LSAT sampling uncertainty which will be added using the following R codebase
 
@@ -26,7 +29,11 @@ Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Reto Ruedy, NASA GISTEMP Tea
 
 ### Step 1: Process ERA Data
 
+* Load and process all of the ERA5 data to be used in the sampling uncertainty estimation (Step 4)
+
 ### Step 2: Process GHCN Data
+
+* Load and process the operational GHCNv4 data to determine LSAT historical coverage
 
 ### Step 3: Interpolate ERA Data
 
@@ -53,3 +60,5 @@ This is the analysis used to decompose the LSAT uncertainty into sampling and ho
 * Step 6b calculates time-series statistics from the full 200-member ensemble
 
 ### Step 8: Create Figures
+
+* Create all figures in Lenssen et al. 2024
