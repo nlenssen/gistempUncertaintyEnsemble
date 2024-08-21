@@ -188,13 +188,18 @@ singleEnsemble <- function(en){
 	# define dimensions
 	londim      <- ncdim_def("lon","degrees_east",as.integer(lon)) 
 	latdim      <- ncdim_def("lat","degrees_north",as.integer(lat)) 
-	timeDim     <- ncdim_def("time",'Months since 12/1879',as.integer(1:nt))
+
+	dayInds <- c(15.5, 45.0, 74.5, 105.0, 135.5, 166.0,
+		196.5, 227.5, 258.0, 288.5, 319.0, 349.5)
+	timeVecOut <- dayInds + rep(seq(0, nYear-1), each=12)*365
+
+	timeDim     <- ncdim_def("time",'days since 1880-01-01 00:00:00',as.integer(timeVecOut))
 
 	# define variables
 	fillvalue <- -9999
-	dlname <- "LSAT Anomaly Uncertainty Ensemble"
-	temp_def <- ncvar_def("tempAnom",'Kelvin',list(londim,latdim,timeDim),
-							fillvalue,dlname, prec="single")
+	longname <- "blended LSAT and SST temperature anomalies (1951-1980 climatology)"
+	temp_def <- ncvar_def("tas",'Kelvin',list(londim,latdim,timeDim),
+							fillvalue,longname, prec="single")
 
 
 	# loop over members
@@ -217,7 +222,7 @@ singleEnsemble <- function(en){
 
 
 		# add global attributes
-		ncatt_put(ncout,0,"title",'Uncertainty Ensemble')
+		ncatt_put(ncout,0,"title",'GISTEMP v4 Uncertainty Ensemble')
 		ncatt_put(ncout,0,"institution",'NASA GISTEMP')
 		history <- paste("N. Lenssen", date(), sep=", ")
 		ncatt_put(ncout,0,"history",history)
@@ -225,12 +230,8 @@ singleEnsemble <- function(en){
 		# CRITICAL: close the netcdf so it is readable
 		nc_close(ncout)
 	}
-	# save(samplingEnsemble,file=sprintf('Data/Ensemble/ensembleChunk_%03d.Rda',en))
 }
 
-# for(en in 1:length(filePaths)){
-# 	singleEnsemble(en)
-# }
 
 
 cl <- makeCluster(nCores_Step5)
@@ -239,16 +240,3 @@ registerDoParallel(cl)
 foreach(en=1:length(filePaths)) %dopar% singleEnsemble(en)
 
 stopCluster(cl)
-
-
-
-# concat all the netcdf files and remove the chunks (not sure if this is how I want
-# to proceed right now)
-
-# currentDir <- getwd()
-
-# setwd(sprintf('cd %s',ensembleOutDir))
-# system('ncrcat ensembleChunk_*.nc -O ensembleFull.nc')
-# system('rm ensembleChunk_*')
-# setwd(sprintf('cd %s',currentDir))
-

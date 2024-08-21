@@ -9,7 +9,7 @@ rm(anomalyData)
 # get the important metadata before running anymore
 ###############################################################################
 
-filePaths <- system(sprintf('ls %s/*.nc',ensembleOutDir),intern=T)
+filePaths <- system(sprintf('ls %s/ensembleChunk*.nc',ensembleOutDir),intern=T)
 nens <- length(filePaths)
 
 # get some grid data
@@ -18,7 +18,7 @@ handle <- nc_open(filePaths[1])
 lon    <- ncvar_get(handle, 'lon')
 lat    <- ncvar_get(handle, 'lat')
 
-anomArray <- ncvar_get(handle, 'tempAnom')
+anomArray <- ncvar_get(handle, 'tas')
 
 nlon <- length(lon)
 nlat <- length(lat)
@@ -74,7 +74,7 @@ chunkStatistics <- function(i){
 			latInds      <- latStarts[j]:(latStarts[j] + latChunkSize - 1)
 		
 			handle <- nc_open(filePaths[k])
-			anomMat[,,,k] <- ncvar_get(handle, 'tempAnom',
+			anomMat[,,,k] <- ncvar_get(handle, 'tas',
 													start=c(lonStarts[i],latStarts[j],1),
 													count =c(lonChunkSize, latChunkSize, -1))
 			nc_close(handle)	
@@ -103,7 +103,6 @@ outList <- foreach(i=1:length(lonStarts)) %dopar% chunkStatistics(i)
 stopCluster(cl)
 
 # process the output
-
 monthlyEnsembleSize <- array(NA, dim=c(nlon, nlat, nt))
 monthlyEnsembleMean <- array(NA, dim=c(nlon, nlat, nt))
 monthlyEnsembleSd   <- array(NA, dim=c(nlon, nlat, nt))
@@ -134,44 +133,73 @@ for(i in 1:length(lonStarts)){
 }
 
 
+##############################
+# save the final grided analysis as R files
+##############################
 
-# save the final
+
 save(monthlyEnsembleSize, monthlyEnsembleMean, monthlyEnsembleSd, monthlyEnsembleQuantiles,
 	file= sprintf('%s/griddedSummaryStatistics.Rda',ensembleOutDir))
 
 
 
 
+##############################
+# save each final grided analysis as netcdf
+##############################
+
+fillvalue <- -9999
+
+# define dimensions
+londim      <- ncdim_def("lon","degrees_east",as.integer(lon)) 
+latdim      <- ncdim_def("lat","degrees_north",as.integer(lat)) 
+timeDim     <- ncdim_def("time",'Months since 12/1879',as.integer(1:nt))
+quantDim    <- ncdim_def("quantile",'0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975',as.integer(1:length(quantProbs)))
 
 
 
+# define loop stuff
+nameVec <- sprintf("Ensemble Field %s",c('Sample Size', 'Mean', 'SD', 'Quantiles'))
+varNameVec <- c('sampleSize', 'mean', 'sd', 'quants')
+unitVec    <- c('# of obs', rep('Kelvin',3))
 
-###############################################################################
-# check SST uncetainty in a few points
-###############################################################################
+objectVector <- c('monthlyEnsembleSize', 'monthlyEnsembleMean',
+				  'monthlyEnsembleSd', 'monthlyEnsembleQuantiles')
 
-# lonInd <- which(lon==1)
-# latInd <- which(lat==89)
+for(i in 1:length(nameVec)){
+	dlname <- nameVec[i]
+
+	if(i < 4){
+		field_def <- ncvar_def(varNameVec[i], unitVec[i],list(londim,latdim,timeDim),
+					fillvalue,dlname, prec="single")		
+	} else{
+		field_def <- ncvar_def(varNameVec[i], unitVec[i],list(londim,latdim,timeDim, quantDim),
+			fillvalue,dlname, prec="single")
+	}
 
 
-# # get the matrix of time x ensemble member at a single location
-# anomMat <- matrix(nrow=nt,ncol=nens*nSamples)
-# for(k in 1:nens){
-# 	colInds <- (1+(k-1)*nSamples):(k*nSamples)
+	# create netCDF file and put arrays
+	ncfname <- sprintf('%s/griddedSummary_%s.nc',ensembleOutDir,varNameVec[i])
 
-# 	handle <- nc_open(filePaths[k])
-# 	anomMat[,colInds] <- ncvar_get(handle, 'tempAnom', start=c(lonInd,latInd,1,1), count =c(1, 1, -1, -1))
-# 	nc_close(handle)	
-# }
+	# remove exisitng netcdf 
+	if(file.exists(ncfname) & overwriteFiles) file.remove(ncfname)
 
-# # safety check to make sure we have data in this cell
-# if(all(is.na(anomMat))) next()
+	ncout <- nc_create(ncfname, list(field_def),force_v4=TRUE)
 
-# # calculate statistics
-# monthlyEnsembleSize[i,j,] <- apply(anomMat,1,function(x) sum(!is.na(x)))
-# monthlyEnsembleMean[i,j,] <- apply(anomMat,1,mean, na.rm=T)
-# monthlyEnsembleSd[i,j,]   <- apply(anomMat,1,sd, na.rm=T)
+	# put variables
+	ncvar_put(ncout,field_def,get(objectVector[i]))
 
-# monthlyEnsembleQuantiles[i,j,,] <- t(apply(anomMat,1,quantile,
-# 	probs= quantProbs, na.rm=T))
+	# put additional attributes into dimension and data variables
+	ncatt_put(ncout,"lon","axis","X")
+	ncatt_put(ncout,"lat","axis","Y")
+	ncatt_put(ncout,"time","axis","T")
 
+	# add global attributes
+	ncatt_put(ncout,0,"title",'Uncertainty Ensemble')
+	ncatt_put(ncout,0,"institution",'NASA GISTEMP')
+	history <- paste("N. Lenssen", date(), sep=", ")
+	ncatt_put(ncout,0,"history",history)
+
+	# CRITICAL: close the netcdf so it is readable
+	nc_close(ncout)
+}
