@@ -1,6 +1,8 @@
 # GISTEMP Uncertainty Ensemble Source Code
 Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Peter Jacobs, Matthew Menne, Reto Ruedy, NASA GISTEMP Team
 
+Current version: v1.0.0
+
 ## Outline of Codebase
 
 `Code/` Contains the `R` scripts used to run the analysis
