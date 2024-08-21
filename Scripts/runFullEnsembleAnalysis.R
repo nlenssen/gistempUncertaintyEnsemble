@@ -109,7 +109,7 @@ rm(list=objs)
 # Step 8
 source('Namelists/awsNamelist.Rnl')
 print('Starting Step 6a')
-timingVec[10] <- system.time(source('Code/08PaperFigures.R'))[3]
+timingVec[11] <- system.time(source('Code/08PaperFigures.R'))[3]
 
 objs <- ls()
 objs <- objs[-which(objs %in% preserveVarVec)]

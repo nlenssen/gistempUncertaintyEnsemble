@@ -38,7 +38,7 @@ ensembleOutDir <- sprintf('%s/Output/FullEnsemble',scratchDir)
 gistempUncDir  <- sprintf('%s/GistempUncertainty', homeDir)
 
 # directory to plot in
-plotdir <- '~/scratchFigures'
+plotdir <- './Figures'
 
 ###############################################################################
 # Major settings for the whole code
