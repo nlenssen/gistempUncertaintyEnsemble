@@ -21,9 +21,11 @@ Current version: v1.0.0
 
 ## Recommended Architecture
 
-This analysis was run on an AWS hpc6a.48xlarge (96 core, 384 GB RAM) instance with 300GB of gp2 (SSD) mounted to the instance. As this analysis is often I/O limited, a SSD can dramatically improve the wall-time for running the full analysis.
+This analysis was run on an AWS hpc6a.48xlarge (96 core, 384 GB RAM) instance with 300GB of gp2 (SSD) mounted to the instance. As this analysis is often I/O limited, a SSD can dramatically improve the wall-time for running the full analysis. 
 
-The analysis can be run on smaller clusters, but the number of cores used for various steps will need to be adjusted in `Namelists/awsNamelist.Rnl`. The limiting factor will generally be the avaiaible memory, not the number of avaiable cores.
+The analysis can be run on smaller clusters, but the number of cores used for various steps will need to be adjusted in `Namelists/awsNamelist.Rnl`. The limiting factor will generally be the available memory, not the number of avaiable cores.
+
+A huge thank you to Hoot Thompson, Dorian Crockrell, Dan'l Pierce, Garrison Vaughan, and Dan Duffy at the NASA Center for Climate Simulation (NCCS) for supercomputing and cloud computing support. This research has made use of the NASA Goddard Science Managed Cloud Environment (SMCE), which is a service of the Computational & Information Sciences and Technology Office at the NASA Goddard Space Flight Center.
 
 ## GHCN-ERSST-GISTEMP Ensemble
 * Currently being run on NASA Discover
