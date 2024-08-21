@@ -35,7 +35,7 @@ A huge thank you to Hoot Thompson, Dorian Crockrell, Dan'l Pierce, Garrison Vaug
 
 ## GHCN-ERSST-GISTEMP Ensemble
 * Currently being run on NASA Discover
-* 100 member ensemble of operational python GISTEMP run with input from the GHCN and ERSST uncertainty ensembles
+* A 100 member ensemble using operational python GISTEMP with input from the GHCN and ERSST uncertainty ensembles
 * Contains all relevant sources of uncertainty other than the LSAT sampling uncertainty which will be added using the following R codebase
 * Downloadable as part of the [Intermediate repository on Zenodo](https://doi.org/10.5281/zenodo.13344579) for Lenssen et al. (2024)
 
