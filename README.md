@@ -13,11 +13,16 @@ Current version: v1.0.0
 
 `Scripts/` Contains a master script to run the full analysis with one command.
 
-## Data Directories
+## Directories
 
-`scratchDir/` Contains the majority of the analysis files. This will be 50+ GB so will often not fit in a home directory on a remote cluster
+`scratchDir/` Contains the majority of the analysis files. This will be 50+ GB so will often not fit in a home directory on a remote cluster. This directory should have `Raw/`, `Intermediate/`, and `Output/` subdirectories.
 `ensembleOutDir/` The directory where the final ensemble and related analyses are saved
 `plotdir/` The directory figures (in PDF format) are written to
+
+## Data Archive
+The full `scratchDir/` has been archived for Lenssen et al. (2024). Two repositories were used due to the 50GB limit:
+* [The results and raw data directories](https://zenodo.org/doi/10.5281/zenodo.13343335)
+* [The intermediate data products, including the GHCN-ERSST-GISTEMP ensemble](https://zenodo.org/doi/10.5281/zenodo.13344579)
 
 ## Recommended Architecture
 
@@ -31,6 +36,7 @@ A huge thank you to Hoot Thompson, Dorian Crockrell, Dan'l Pierce, Garrison Vaug
 * Currently being run on NASA Discover
 * 100 member ensemble of operational python GISTEMP run with input from the GHCN and ERSST uncertainty ensembles
 * Contains all relevant sources of uncertainty other than the LSAT sampling uncertainty which will be added using the following R codebase
+* Downloadable as part of the [Intermediate repository on Zenodo](https://doi.org/10.5281/zenodo.13344579) for Lenssen et al. (2024)
 
 ## Steps
 
