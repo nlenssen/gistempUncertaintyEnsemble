@@ -15,6 +15,8 @@ Current version: v1.0.0
 
 ## Directories
 
+*Note:* Set the path to these directories in `Namelists/awsNamelist.Rnl`
+
 `scratchDir/` Contains the majority of the analysis files. This will be 50+ GB so will often not fit in a home directory on a remote cluster. This directory should have `Raw/`, `Intermediate/`, and `Output/` subdirectories.
 
 `ensembleOutDir/` The directory where the final ensemble and related analyses are saved
