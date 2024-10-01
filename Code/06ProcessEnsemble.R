@@ -164,10 +164,13 @@ fillvalue <- -9999
 # define dimensions
 londim      <- ncdim_def("lon","degrees_east",as.integer(lon)) 
 latdim      <- ncdim_def("lat","degrees_north",as.integer(lat)) 
-timeDim     <- ncdim_def("time",'Months since 12/1879',as.integer(1:nt))
 quantDim    <- ncdim_def("quantile",'0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975',as.integer(1:length(quantProbs)))
 
+# Define the time dimension ~properly~ now to account for leap years
+dateSeq <- seq(as.Date('1880-01-15'), as.Date(sprintf('%s-12-15',endYear)), by='month')
+timeVecOut <- dateSeq - as.Date('1880-01-01')
 
+timeDim     <- ncdim_def("time",'days since 1880-01-01 00:00:00',as.integer(timeVecOut))
 
 # define loop stuff
 nameVec <- sprintf("Ensemble Field %s",c('Sample Size', 'Mean', 'SD', 'Quantiles'))
