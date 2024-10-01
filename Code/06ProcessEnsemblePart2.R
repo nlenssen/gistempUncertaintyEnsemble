@@ -123,10 +123,15 @@ save(ensembleGlobalMean, ensembleNHemMean , ensembleSHemMean, ensembleBandMean,
 fillvalue <- -9999
 
 # define dimensions
-timeDim     <- ncdim_def("time",'Months since 12/1879',as.integer(1:nt))
 ensDim		<- ncdim_def("ens",'Ensemble Member',as.integer(1:nens))
 bandDim		<- ncdim_def("band",'Zonal Band',as.integer(1:8))	
 
+# Define the time dimension ~properly~ now to account for leap years
+dateSeq <- seq(as.Date('1880-01-15'), as.Date(sprintf('%s-12-15',endYear)), by='month')
+timeVecOut <- dateSeq - as.Date('1880-01-01')
+
+timeDim     <- ncdim_def("time",'days since 1880-01-01 00:00:00',as.integer(timeVecOut))
+		  
 # define loop stuff
 nameVec <- sprintf("Ensemble SST+LSAT Mean Series (%s)",c('Global Mean', 'NH Mean', 'SH Mean', 'Zonal Band Mean'))
 
@@ -222,9 +227,14 @@ if(landMeans){
 	fillvalue <- -9999
 
 	# define dimensions
-	timeDim     <- ncdim_def("time",'Months since 12/1879',as.integer(1:nt))
 	ensDim		<- ncdim_def("ens",'Ensemble Member',as.integer(1:nens))
-	bandDim		<- ncdim_def("band",'Zonal Band',as.integer(1:8))	
+	bandDim		<- ncdim_def("band",'Zonal Band',as.integer(1:8))
+
+	# Define the time dimension ~properly~ now to account for leap years
+	dateSeq <- seq(as.Date('1880-01-15'), as.Date(sprintf('%s-12-15',endYear)), by='month')
+	timeVecOut <- dateSeq - as.Date('1880-01-01')
+
+	timeDim     <- ncdim_def("time",'days since 1880-01-01 00:00:00',as.integer(timeVecOut))
 
 	# define loop stuff
 	nameVec <- sprintf("Ensemble LSAT Mean Series (%s)",c('Global Mean', 'NH Mean', 'SH Mean', 'Zonal Band Mean'))
@@ -323,10 +333,15 @@ if(oceanMeans){
 	fillvalue <- -9999
 
 	# define dimensions
-	timeDim     <- ncdim_def("time",'Months since 12/1879',as.integer(1:nt))
 	ensDim		<- ncdim_def("ens",'Ensemble Member',as.integer(1:nens))
 	bandDim		<- ncdim_def("band",'Zonal Band',as.integer(1:8))	
 
+	# Define the time dimension ~properly~ now to account for leap years
+	dateSeq <- seq(as.Date('1880-01-15'), as.Date(sprintf('%s-12-15',endYear)), by='month')
+	timeVecOut <- dateSeq - as.Date('1880-01-01')
+
+	timeDim     <- ncdim_def("time",'days since 1880-01-01 00:00:00',as.integer(timeVecOut))
+	
 	# define loop stuff
 	nameVec <- sprintf("Ensemble SST Mean Series (%s)",c('Global Mean', 'NH Mean', 'SH Mean', 'Zonal Band Mean'))
 
