@@ -200,9 +200,9 @@ singleEnsemble <- function(en){
 	londim      <- ncdim_def("lon","degrees_east",as.integer(lon)) 
 	latdim      <- ncdim_def("lat","degrees_north",as.integer(lat)) 
 
-	dayInds <- c(15.5, 45.0, 74.5, 105.0, 135.5, 166.0,
-		196.5, 227.5, 258.0, 288.5, 319.0, 349.5)
-	timeVecOut <- dayInds + rep(seq(0, nYear-1), each=12)*365
+	# Define the time dimension ~properly~ now to account for leap years
+	dateSeq <- seq(as.Date('1880-01-15'), as.Date(sprintf('%s-12-15',endYear)), by='month')
+	timeVecOut <- dateSeq - as.Date('1880-01-01')
 
 	timeDim     <- ncdim_def("time",'days since 1880-01-01 00:00:00',as.integer(timeVecOut))
 
