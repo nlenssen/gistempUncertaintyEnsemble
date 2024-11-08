@@ -3,6 +3,9 @@ Nathan Lenssen, Gavin Schmidt, Michael Hendrickson, Peter Jacobs, Matthew Menne,
 
 Current version: v1.0.0
 
+## Journal Article
+Lenssen, N., Schmidt, G. A., Hendrickson, M., Jacobs, P., Menne, M. J., & Ruedy, R. (2024). A NASA GISTEMPv4 observational uncertainty ensemble. _Journal of Geophysical Research: Atmospheres_, 129, e2023JD040179. https://doi.org/10.1029/2023JD040179
+
 ## Outline of Codebase
 
 `Code/` Contains the `R` scripts used to run the analysis
